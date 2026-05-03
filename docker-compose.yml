@@ -1,0 +1,6 @@
+include:
+  - path: core/docker-compose.yml
+    env_file: .env            # pass root .env to dir1
+    
+  - path: orchestrator/docker-compose.yml
+    env_file: .env            # pass root .env to dir2
