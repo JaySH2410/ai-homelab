@@ -46,6 +46,9 @@ services:
         fi
     volumes:
       - ./n8n/demo-data:/demo-data
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   n8n:
     <<: *service-n8n
@@ -62,5 +65,7 @@ services:
       - ./shared/rag-files:/data/rag-files
 
     depends_on:
+      postgres:
+        condition: service_healthy
       n8n-import:
         condition: service_completed_successfully
