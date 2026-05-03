@@ -1,6 +1,7 @@
 include:
   - path: core/docker-compose.yml
-    env_file: .env            # pass root .env to dir1
-    
+    env_file: .env
   - path: orchestrator/docker-compose.yml
-    env_file: .env            # pass root .env to dir2
+    env_file: .env
+  - path: ai-services/docker-compose.yml
+    env_file: .env
