@@ -1,0 +1,85 @@
+volumes:
+  ollama_storage:
+  docling_data:
+
+
+networks:
+  ai-homelab:
+    external: true
+
+# Reuseable ollama config
+# Base Ollama
+x-ollama: &service-ollama
+  image: ollama/ollama:latest
+  networks: [ 'ai-homelab' ]
+  restart: unless-stopped
+  ports:
+    - "${OLLAMA_PORT}:11434"
+  volumes:
+    - ollama_storage:/root/.ollama
+# Initialized Ollama with llama 3
+x-init-ollama: &init-ollama
+  image: ollama/ollama:latest
+  networks: [ 'ai-homelab' ]
+  entrypoint: /bin/sh
+  environment:
+    - OLLAMA_HOST=ollama:11434
+  command:
+    - "-c"
+    - "sleep 5; ollama pull llama3"
+
+# Reusable Docling config
+# Base Docling  
+x-docling: &service-docling
+  image: ghcr.io/docling-project/docling-serve:main
+  networks: [ 'ai-homelab' ]
+  restart: unless-stopped
+  user: root
+  working_dir: /shared/docling-scratch
+
+  ports:
+    - "${DOCLING_PORT}:5001"
+
+  environment:
+    - DOCLING_SERVE_ENABLE_UI=true
+    - DOCLING_SERVE_SCRATCH_PATH=/shared/docling-scratch
+    - DOCLING_SERVE_SINGLE_USE_RESULTS=false
+    - GRADIO_ALLOWED_PATHS=/shared
+    - GRADIO_TEMP_DIR=/shared/docling-scratch
+    # - NVIDIA_VISIBLE_DEVICES=all
+    - DOCLING_SERVE_ENABLE_REMOTE_SERVICES=true
+  # runtime: nvidia
+
+  volumes:
+    - docling_data:/data
+    - ./shared:/shared
+
+# Services
+services:
+  ollama:
+    <<: *service-ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+
+  ollama-pull:
+    <<: *init-ollama
+    depends_on:
+      - ollama
+
+  docling:
+    <<: *service-docling
+    image: ghcr.io/docling-project/docling-serve-cu126:main
+    environment:
+      - DOCLING_SERVE_ENABLE_UI=true
+      - DOCLING_SERVE_SCRATCH_PATH=/shared/docling-scratch
+      - DOCLING_SERVE_SINGLE_USE_RESULTS=false
+      - GRADIO_ALLOWED_PATHS=/shared
+      - GRADIO_TEMP_DIR=/shared/docling-scratch
+      - NVIDIA_VISIBLE_DEVICES=all
+      - DOCLING_SERVE_ENABLE_REMOTE_SERVICES=true
+    runtime: nvidia
