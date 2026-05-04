@@ -2,7 +2,6 @@ volumes:
   postgres_storage:
   qdrant_storage:
 
-
 networks:
   ai-homelab:
     external: true
@@ -24,7 +23,11 @@ services:
       - ai-homelab
 
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB}",
+        ]
       interval: 5s
       timeout: 5s
       retries: 10

@@ -2,7 +2,6 @@ volumes:
   ollama_storage:
   docling_data:
 
-
 networks:
   ai-homelab:
     external: true
@@ -11,7 +10,7 @@ networks:
 # Base Ollama
 x-ollama: &service-ollama
   image: ollama/ollama:latest
-  networks: [ 'ai-homelab' ]
+  networks: ["ai-homelab"]
   restart: unless-stopped
   ports:
     - "${OLLAMA_PORT}:11434"
@@ -20,7 +19,7 @@ x-ollama: &service-ollama
 # Initialized Ollama with llama 3
 x-init-ollama: &init-ollama
   image: ollama/ollama:latest
-  networks: [ 'ai-homelab' ]
+  networks: ["ai-homelab"]
   entrypoint: /bin/sh
   environment:
     - OLLAMA_HOST=ollama:11434
@@ -29,10 +28,10 @@ x-init-ollama: &init-ollama
     - "sleep 5; ollama pull llama3"
 
 # Reusable Docling config
-# Base Docling  
+# Base Docling
 x-docling: &service-docling
   image: ghcr.io/docling-project/docling-serve:main
-  networks: [ 'ai-homelab' ]
+  networks: ["ai-homelab"]
   restart: unless-stopped
   user: root
   working_dir: /shared/docling-scratch
@@ -64,7 +63,7 @@ services:
           devices:
             - driver: nvidia
               count: 1
-              capabilities: [ gpu ]
+              capabilities: [gpu]
 
   ollama-pull:
     <<: *init-ollama

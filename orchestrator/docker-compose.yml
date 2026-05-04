@@ -1,7 +1,6 @@
 volumes:
   n8n_storage:
 
-
 networks:
   ai-homelab:
     external: true
@@ -10,7 +9,7 @@ networks:
 
 x-n8n: &service-n8n
   image: n8nio/n8n:latest
-  networks: [ 'ai-homelab' ]
+  networks: ["ai-homelab"]
   environment:
     DB_TYPE: postgresdb
     DB_POSTGRESDB_HOST: postgres
