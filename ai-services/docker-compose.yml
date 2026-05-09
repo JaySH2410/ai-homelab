@@ -51,7 +51,7 @@ x-docling: &service-docling
 
   volumes:
     - docling_data:/data
-    - ./shared:/shared
+    - ../shared:/shared
 
 # Services
 services:
