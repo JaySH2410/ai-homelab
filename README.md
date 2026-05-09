@@ -172,6 +172,9 @@ Ollama
    ↓
 AI Summary Response
 ```
+
+![Architecture](./n8n_wf1.png)
+
 ---
 
 ## 🧪 Example API Call and Example Response
